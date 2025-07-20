@@ -2,6 +2,13 @@
 # pip install git+https://github.com/huggingface/transformers
 # pip install --upgrade "mistral-common[audio]"
 
+
+# Cuda CUDA 11.8 Support
+# pip install torch torchvision torchaudio - -index-url https: // download.pytorch.org/whl/cu118
+
+# Für CUDA 12.1 Support (empfohlen)
+# pip install torch torchvision torchaudio - -index-url https: // download.pytorch.org/whl/cu121
+
 r"""
 Background recorder + transcription with Voxtral (local) + clipboard copy
 -----------------------------------------------------------
@@ -104,6 +111,13 @@ def load_model() -> None:
     global model, processor
     status.set("Loading Voxtral …")
     device = "cuda" if torch.cuda.is_available() else "cpu"
+
+    # GPU-Speicher leeren falls nötig
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+        print(f"Using GPU: {torch.cuda.get_device_name()}")
+    else:
+        print("Using CPU (CUDA not available)")
     try:
         processor = AutoProcessor.from_pretrained(MODEL_NAME)
         model = VoxtralForConditionalGeneration.from_pretrained(
